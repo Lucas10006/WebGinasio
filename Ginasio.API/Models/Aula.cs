@@ -6,7 +6,7 @@
         public string Nome { get; set; }
         public string Instrutor { get; set; }
 
-        // Uma aula tem muitos membros inscritos 
+        // Uma aula tem muitos membros inscritos
         public ICollection<Membro> Membros { get; set; }
     }
 }
