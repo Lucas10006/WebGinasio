@@ -12,6 +12,7 @@ namespace Ginasio.API.Models
         public decimal Preco { get; set; }
 
         // Relacionamento Muitos-para-Um: Um plano tem muitos membros 
-        public ICollection<Membro> Membros { get; set; }
+        // Ao inicializar com 'new List<Membro>()', dizemos ao .NET que o campo não é obrigatório no POST
+        public ICollection<Membro> Membros { get; set; } = new List<Membro>();
     }
 }

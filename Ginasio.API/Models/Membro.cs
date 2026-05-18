@@ -8,7 +8,8 @@
 
         //Muitos para um. O membro vai pertencer a um plano.
         public int PlanoId { get; set; }
-        public Plano Plano { get; set; }
+        // O '?' diz ao validador do .NET que este objeto pode ser nulo no envio do POST
+        public Plano? Plano { get; set; }
 
         // Muitos para muitos. O membro pode pertencer a várias aulas.
         public ICollection<Aula> Aulas { get; set; }
