@@ -1,99 +1,155 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Ginasio.API.Data;
+﻿using Ginasio.API.Data;
 using Ginasio.API.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ginasio.API.Controllers
 {
-    // Define a rota da API (ex: api/planos) e indica que é um controlador de API
+    // Controlador responsável pelas operações dos planos
     [Route("api/[controller]")]
     [ApiController]
     public class PlanosController : ControllerBase
     {
         private readonly GinasioContext _context;
 
-        // Injeção de dependência do Contexto da Base de Dados
+        // Recebe o contexto da base de dados
         public PlanosController(GinasioContext context)
         {
             _context = context;
         }
 
-        // GET: api/Planos (Listar todos os planos)
+        // GET: api/Planos
+        // Devolve todos os planos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Plano>>> GetPlanos()
         {
-            // Usa LINQ de forma assíncrona para obter todos os planos da tabela
-            return await _context.Planos.ToListAsync();
+            var planos = await _context.Planos
+                .OrderBy(p => p.Nome)
+                .ToListAsync();
+
+            return Ok(planos);
         }
 
-        // GET: api/Planos/5 (Ver detalhes de um plano específico)
+        // GET: api/Planos/5
+        // Devolve um plano através do seu ID
         [HttpGet("{id}")]
         public async Task<ActionResult<Plano>> GetPlano(int id)
         {
-            // Procura o plano pelo ID enviado na rota
-            var plano = await _context.Planos.FindAsync(id);
+            var plano = await _context.Planos
+                .Include(p => p.Membros)
+                .FirstOrDefaultAsync(p => p.Id == id);
 
             if (plano == null)
             {
-                // Retorna um erro HTTP 404 se não for encontrado
                 return NotFound("Plano não encontrado.");
             }
 
-            return plano;
+            return Ok(plano);
         }
 
-        // POST: api/Planos (Criar um novo plano)
+        // POST: api/Planos
+        // Cria um novo plano
         [HttpPost]
         public async Task<ActionResult<Plano>> PostPlano(Plano plano)
         {
-            // Adiciona o novo objeto à tabela de Planos
+            // Verifica se os dados recebidos são válidos
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Retira espaços no início e no fim do nome
+            plano.Nome = plano.Nome.Trim();
+
+            // Verifica se já existe um plano com o mesmo nome
+            var planoExiste = await _context.Planos
+                .AnyAsync(p => p.Nome.ToLower() == plano.Nome.ToLower());
+
+            if (planoExiste)
+            {
+                return BadRequest("Já existe um plano com esse nome.");
+            }
+
             _context.Planos.Add(plano);
-            // Guarda as alterações na Base de Dados de forma definitiva
             await _context.SaveChangesAsync();
 
-            // Retorna o status HTTP 201 (Created) com a localização do novo recurso
-            return CreatedAtAction(nameof(GetPlano), new { id = plano.Id }, plano);
+            return CreatedAtAction(
+                nameof(GetPlano),
+                new { id = plano.Id },
+                plano
+            );
         }
 
-        // PUT: api/Planos/5 (Atualizar/Editar um plano completo)
+        // PUT: api/Planos/5
+        // Edita um plano existente
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlano(int id, Plano plano)
         {
+            // O ID da rota tem de ser igual ao ID do objeto
             if (id != plano.Id)
             {
-                return BadRequest("O ID fornecido não coincide.");
+                return BadRequest("O ID indicado não corresponde ao plano.");
             }
 
-            // Informa o Entity Framework que o objeto foi modificado
-            _context.Entry(plano).State = EntityState.Modified;
-
-            try
+            if (!ModelState.IsValid)
             {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.Planos.Any(e => e.Id == id))
-                {
-                    return NotFound("O plano já não existe.");
-                }
-                throw;
+                return BadRequest(ModelState);
             }
 
-            return NoContent(); // HTTP 204 (Sucesso, sem conteúdo para retornar)
+            var planoAtual = await _context.Planos.FindAsync(id);
+
+            if (planoAtual == null)
+            {
+                return NotFound("Plano não encontrado.");
+            }
+
+            plano.Nome = plano.Nome.Trim();
+
+            // Verifica se outro plano já usa o mesmo nome
+            var nomeRepetido = await _context.Planos
+                .AnyAsync(p =>
+                    p.Id != id &&
+                    p.Nome.ToLower() == plano.Nome.ToLower()
+                );
+
+            if (nomeRepetido)
+            {
+                return BadRequest("Já existe outro plano com esse nome.");
+            }
+
+            // Atualiza apenas os campos necessários
+            planoAtual.Nome = plano.Nome;
+            planoAtual.Descricao = plano.Descricao;
+            planoAtual.Preco = plano.Preco;
+            planoAtual.Ativo = plano.Ativo;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
 
-        // DELETE: api/Planos/5 (Eliminar um plano)
+        // DELETE: api/Planos/5
+        // Elimina um plano se não tiver membros associados
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlano(int id)
         {
-            var plano = await _context.Planos.FindAsync(id);
+            var plano = await _context.Planos
+                .Include(p => p.Membros)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (plano == null)
             {
                 return NotFound("Plano não encontrado.");
             }
 
-            // Remove o registo e guarda as alterações
+            // Um plano com membros associados não pode ser eliminado
+            if (plano.Membros.Any())
+            {
+                return BadRequest(
+                    "Não é possível eliminar um plano que tenha membros associados."
+                );
+            }
+
             _context.Planos.Remove(plano);
             await _context.SaveChangesAsync();
 
