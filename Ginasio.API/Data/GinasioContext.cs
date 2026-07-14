@@ -1,25 +1,43 @@
 ﻿using Ginasio.API.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Reflection.Emit;
 
 namespace Ginasio.API.Data
 {
+    // Esta classe faz a ligação entre os modelos e a base de dados
     public class GinasioContext : DbContext
     {
-        public GinasioContext(DbContextOptions<GinasioContext> options) : base(options) { }
+        public GinasioContext(DbContextOptions<GinasioContext> options)
+            : base(options)
+        {
+        }
 
+        // Tabelas da base de dados
         public DbSet<Membro> Membros { get; set; }
         public DbSet<Plano> Planos { get; set; }
         public DbSet<Aula> Aulas { get; set; }
 
-        // Configuração adicional para os relacionamentos obrigatórios 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Configura a relação Muitos-para-Muitos entre Membro e Aula
+            base.OnModelCreating(modelBuilder);
+
+            // Um plano pode ter vários membros
+            // Cada membro só pode ter um plano
+            modelBuilder.Entity<Membro>()
+                .HasOne(m => m.Plano)
+                .WithMany(p => p.Membros)
+                .HasForeignKey(m => m.PlanoId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Um membro pode estar inscrito em várias aulas
+            // Uma aula pode ter vários membros
             modelBuilder.Entity<Membro>()
                 .HasMany(m => m.Aulas)
                 .WithMany(a => a.Membros);
+
+            // O email de cada membro deve ser único
+            modelBuilder.Entity<Membro>()
+                .HasIndex(m => m.Email)
+                .IsUnique();
         }
     }
 }
