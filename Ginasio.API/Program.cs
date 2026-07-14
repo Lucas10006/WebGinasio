@@ -1,34 +1,36 @@
-using Microsoft.EntityFrameworkCore;
-using Ginasio.API.Data;
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<GinasioContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// Add services to the container.
-// Configura o serializador JSON para ignorar ciclos de objetos nas relações da Base de Dados
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-});
+// Adiciona suporte às Razor Pages
+builder.Services.AddRazorPages();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Regista um HttpClient para comunicar com a API
+builder.Services.AddHttpClient("API", client =>
+{
+    client.BaseAddress = new Uri(
+        builder.Configuration["ApiSettings:BaseUrl"]!
+    );
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Configuração para ambiente de produção
+if (!app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
+// Redireciona automaticamente para HTTPS
 app.UseHttpsRedirection();
+
+// Permite usar ficheiros da pasta wwwroot
+app.UseStaticFiles();
+
+app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllers();
+// Mapeia as Razor Pages
+app.MapRazorPages();
 
 app.Run();
