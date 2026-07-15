@@ -21,31 +21,84 @@ namespace WebGinasio.Pages.Aulas
         // Mensagem apresentada caso aconteça algum erro
         public string? MensagemErro { get; set; }
 
+        // Carrega os dados da aula
         public async Task<IActionResult> OnGetAsync(int id)
+        {
+            var carregou = await CarregarAulaAsync(id);
+
+            if (!carregou)
+            {
+                return Page();
+            }
+
+            return Page();
+        }
+
+        // Remove um membro da aula
+        public async Task<IActionResult> OnPostRemoverMembroAsync(
+            int aulaId,
+            int membroId
+        )
         {
             try
             {
                 var client = _httpClientFactory.CreateClient("API");
 
-                // Procura a aula através do seu ID
+                // Envia o pedido para remover o membro da aula
+                var resposta = await client.DeleteAsync(
+                    $"api/Aulas/{aulaId}/remover/{membroId}"
+                );
+
+                if (resposta.IsSuccessStatusCode)
+                {
+                    return RedirectToPage(
+                        "Details",
+                        new { id = aulaId }
+                    );
+                }
+
+                MensagemErro = await resposta.Content.ReadAsStringAsync();
+            }
+            catch (Exception ex)
+            {
+                MensagemErro =
+                    $"Não foi possível remover o membro: {ex.Message}";
+            }
+
+            // Volta a carregar a aula caso aconteça algum erro
+            await CarregarAulaAsync(aulaId);
+
+            return Page();
+        }
+
+        // Método usado para evitar repetir o código de carregar a aula
+        private async Task<bool> CarregarAulaAsync(int id)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("API");
+
                 var aula = await client.GetFromJsonAsync<AulaDetailsModel>(
                     $"api/Aulas/{id}"
                 );
 
                 if (aula == null)
                 {
-                    return NotFound();
+                    MensagemErro = "Aula não encontrada.";
+                    return false;
                 }
 
                 Aula = aula;
+
+                return true;
             }
             catch (Exception ex)
             {
                 MensagemErro =
                     $"Não foi possível carregar a aula: {ex.Message}";
-            }
 
-            return Page();
+                return false;
+            }
         }
     }
 
