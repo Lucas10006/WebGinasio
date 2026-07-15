@@ -1,4 +1,92 @@
 ﻿@page
 @model WebGinasio.Pages.Planos.DetailsModel
+
 @{
+    ViewData["Title"] = "Detalhes do Plano";
+}
+
+<h1 class="mb-4">Detalhes do Plano</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">@Model.Plano.Nome</h4>
+        </div>
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    Nome
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Plano.Nome
+                </dd>
+
+                <dt class="col-sm-3">
+                    Descrição
+                </dt>
+
+                <dd class="col-sm-9">
+                    @if (string.IsNullOrWhiteSpace(Model.Plano.Descricao))
+                    {
+                        <span>Sem descrição</span>
+                    }
+                    else
+                    {
+                        @Model.Plano.Descricao
+                    }
+                </dd>
+
+                <dt class="col-sm-3">
+                    Preço mensal
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Plano.Preco.ToString("0.00") €
+                </dd>
+
+                <dt class="col-sm-3">
+                    Estado
+                </dt>
+
+                <dd class="col-sm-9">
+                    @if (Model.Plano.Ativo)
+                    {
+                        <span class="badge bg-success">
+                            Ativo
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Inativo
+                        </span>
+                    }
+                </dd>
+
+            </dl>
+
+            <a asp-page="Edit"
+               asp-route-id="@Model.Plano.Id"
+               class="btn btn-warning">
+                Editar
+            </a>
+
+            <a asp-page="Index"
+               class="btn btn-secondary">
+                Voltar
+            </a>
+
+        </div>
+    </div>
 }
