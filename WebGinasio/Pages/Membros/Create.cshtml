@@ -1,4 +1,132 @@
 ﻿@page
 @model WebGinasio.Pages.Membros.CreateModel
+
 @{
+    ViewData["Title"] = "Novo Membro";
+}
+
+<h1 class="mb-4">Novo Membro</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Membro.Nome"
+                       class="form-label">
+                    Nome
+                </label>
+
+                <input asp-for="Membro.Nome"
+                       class="form-control" />
+
+                <span asp-validation-for="Membro.Nome"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Membro.Email"
+                       class="form-label">
+                    Email
+                </label>
+
+                <input asp-for="Membro.Email"
+                       class="form-control"
+                       type="email" />
+
+                <span asp-validation-for="Membro.Email"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Membro.Telefone"
+                       class="form-label">
+                    Telefone
+                </label>
+
+                <input asp-for="Membro.Telefone"
+                       class="form-control" />
+
+                <span asp-validation-for="Membro.Telefone"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Membro.DataNascimento"
+                       class="form-label">
+                    Data de nascimento
+                </label>
+
+                <input asp-for="Membro.DataNascimento"
+                       class="form-control"
+                       type="date" />
+
+                <span asp-validation-for="Membro.DataNascimento"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Membro.PlanoId"
+                       class="form-label">
+                    Plano
+                </label>
+
+                <select asp-for="Membro.PlanoId"
+                        asp-items="Model.Planos"
+                        class="form-select">
+
+                    <option value="">
+                        Escolha um plano
+                    </option>
+
+                </select>
+
+                <span asp-validation-for="Membro.PlanoId"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="Membro.Ativo"
+                       class="form-check-input" />
+
+                <label asp-for="Membro.Ativo"
+                       class="form-check-label">
+                    Membro ativo
+                </label>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success">
+                Guardar
+            </button>
+
+            <a asp-page="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }
