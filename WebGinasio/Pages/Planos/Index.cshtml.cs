@@ -37,11 +37,15 @@ namespace WebGinasio.Pages.Planos
                     Planos = planos;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                // Mostra uma mensagem simples caso a API não responda
-                MensagemErro =
-                    "Não foi possível carregar os planos. Verifique se a API está ligada.";
+                // Mostra o erro real enquanto estamos a desenvolver
+                MensagemErro = $"Erro ao carregar os planos: {ex.Message}";
+
+                if (ex.InnerException != null)
+                {
+                    MensagemErro += $" Detalhes: {ex.InnerException.Message}";
+                }
             }
         }
     }

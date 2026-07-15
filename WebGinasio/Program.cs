@@ -1,3 +1,5 @@
+using System.Net;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Adiciona suporte às Razor Pages
@@ -10,6 +12,10 @@ builder.Services.AddHttpClient("API", client =>
 
     // Define o endereço principal da API
     client.BaseAddress = new Uri(apiUrl!);
+
+    // Usa HTTP/1.1 para evitar problemas na ligação local
+    client.DefaultRequestVersion = HttpVersion.Version11;
+    client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionOrLower;
 });
 
 var app = builder.Build();

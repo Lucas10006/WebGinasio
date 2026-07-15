@@ -32,7 +32,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // Redireciona os pedidos para HTTPS
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
