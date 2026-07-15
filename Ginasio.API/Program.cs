@@ -1,4 +1,6 @@
 using Ginasio.API.Data;
+using Ginasio.API.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,12 +13,18 @@ builder.Services.AddDbContext<GinasioContext>(options =>
 );
 
 // Adiciona os Controllers da API
-// O IgnoreCycles evita erros ao devolver relações entre objetos
+// O IgnoreCycles evita erros nas relações entre os objetos
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.ReferenceHandler =
         System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
+
+// Serviço usado para proteger as palavras-passe
+builder.Services.AddScoped<
+    IPasswordHasher<Utilizador>,
+    PasswordHasher<Utilizador>
+>();
 
 // Adiciona o Swagger para testar a API
 builder.Services.AddEndpointsApiExplorer();
@@ -31,8 +39,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Redireciona os pedidos para HTTPS
-//app.UseHttpsRedirection();
+// Durante o desenvolvimento estamos a usar HTTP entre os projetos
+// app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
