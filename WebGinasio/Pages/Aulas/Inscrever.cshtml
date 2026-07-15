@@ -1,4 +1,123 @@
 ﻿@page
 @model WebGinasio.Pages.Aulas.InscreverModel
+
 @{
+    ViewData["Title"] = "Inscrever Membro";
+}
+
+<h1 class="mb-4">Inscrever Membro</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+
+<div class="card mb-4">
+
+    <div class="card-header">
+        <h4 class="mb-0">
+            @Model.Aula.Nome
+        </h4>
+    </div>
+
+    <div class="card-body">
+
+        <p>
+            <strong>Data e hora:</strong>
+            @Model.Aula.DataHora.ToString("dd/MM/yyyy HH:mm")
+        </p>
+
+        <p>
+            <strong>Lotação:</strong>
+            @Model.Aula.Membros.Count / @Model.Aula.LotacaoMaxima
+        </p>
+
+        <p>
+            <strong>Estado:</strong>
+
+            @if (Model.Aula.Ativa)
+            {
+                <span class="badge bg-success">
+                    Ativa
+                </span>
+            }
+            else
+            {
+                <span class="badge bg-danger">
+                    Inativa
+                </span>
+            }
+        </p>
+
+    </div>
+</div>
+
+@if (!Model.Aula.Ativa)
+{
+    <div class="alert alert-warning">
+        Não é possível inscrever membros numa aula inativa.
+    </div>
+}
+else if (Model.Aula.Membros.Count >= Model.Aula.LotacaoMaxima)
+{
+    <div class="alert alert-warning">
+        Esta aula já atingiu a lotação máxima.
+    </div>
+}
+else if (Model.MembrosDisponiveis.Count == 0)
+{
+    <div class="alert alert-info">
+        Não existem membros disponíveis para inscrição.
+    </div>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-6">
+
+            <form method="post">
+
+                <input type="hidden"
+                       asp-for="AulaId" />
+
+                <div class="mb-3">
+
+                    <label asp-for="MembroId"
+                           class="form-label">
+                        Membro
+                    </label>
+
+                    <select asp-for="MembroId"
+                            asp-items="Model.MembrosDisponiveis"
+                            class="form-select">
+
+                        <option value="">
+                            Escolha um membro
+                        </option>
+
+                    </select>
+
+                    <span asp-validation-for="MembroId"
+                          class="text-danger">
+                    </span>
+
+                </div>
+
+                <button type="submit"
+                        class="btn btn-success">
+                    Inscrever
+                </button>
+
+                <a asp-page="Details"
+                   asp-route-id="@Model.AulaId"
+                   class="btn btn-secondary">
+                    Cancelar
+                </a>
+
+            </form>
+
+        </div>
+    </div>
 }
