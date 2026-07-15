@@ -72,10 +72,7 @@ else
                             Cheia
                         </span>
                     }
-                    else if (
-                    Model.Aula.Membros.Count >=
-                    Model.Aula.LotacaoMaxima * 0.8
-                    )
+                    else if (Model.Aula.Membros.Count >= Model.Aula.LotacaoMaxima * 0.8)
                     {
                         <span class="badge bg-warning text-dark ms-2">
                             Quase cheia
@@ -124,6 +121,7 @@ else
                     <th>Nome</th>
                     <th>Email</th>
                     <th>Estado</th>
+                    <th width="120">Ações</th>
                 </tr>
             </thead>
 
@@ -156,6 +154,27 @@ else
                             }
                         </td>
 
+                        <td>
+                            <form method="post"
+                                  asp-page-handler="RemoverMembro"
+                                  onsubmit="return confirm('Tens a certeza de que queres remover este membro da aula?');">
+
+                                <input type="hidden"
+                                       name="aulaId"
+                                       value="@Model.Aula.Id" />
+
+                                <input type="hidden"
+                                       name="membroId"
+                                       value="@membro.Id" />
+
+                                <button type="submit"
+                                        class="btn btn-danger btn-sm">
+                                    Remover
+                                </button>
+
+                            </form>
+                        </td>
+
                     </tr>
                 }
 
@@ -163,6 +182,7 @@ else
 
         </table>
     }
+
     <a asp-page="Inscrever"
        asp-route-id="@Model.Aula.Id"
        class="btn btn-success">
