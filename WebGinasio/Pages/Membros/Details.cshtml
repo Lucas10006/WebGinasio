@@ -1,4 +1,179 @@
 ﻿@page
 @model WebGinasio.Pages.Membros.DetailsModel
+
 @{
+    ViewData["Title"] = "Detalhes do Membro";
+}
+
+<h1 class="mb-4">Detalhes do Membro</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+else
+{
+    <div class="card mb-4">
+
+        <div class="card-header">
+            <h4 class="mb-0">
+                @Model.Membro.Nome
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    Nome
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Membro.Nome
+                </dd>
+
+                <dt class="col-sm-3">
+                    Email
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Membro.Email
+                </dd>
+
+                <dt class="col-sm-3">
+                    Telefone
+                </dt>
+
+                <dd class="col-sm-9">
+                    @if (string.IsNullOrWhiteSpace(Model.Membro.Telefone))
+                    {
+                        <span>Sem telefone</span>
+                    }
+                    else
+                    {
+                        @Model.Membro.Telefone
+                    }
+                </dd>
+
+                <dt class="col-sm-3">
+                    Data de nascimento
+                </dt>
+
+                <dd class="col-sm-9">
+                    @if (Model.Membro.DataNascimento.HasValue)
+                    {
+                        @Model.Membro.DataNascimento.Value.ToString("dd/MM/yyyy")
+                    }
+                    else
+                    {
+                        <span>Não indicada</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">
+                    Data de inscrição
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Membro.DataInscricao.ToString("dd/MM/yyyy")
+                </dd>
+
+                <dt class="col-sm-3">
+                    Plano
+                </dt>
+
+                <dd class="col-sm-9">
+                    @if (Model.Membro.Plano != null)
+                    {
+                        <span>
+                            @Model.Membro.Plano.Nome
+                            -
+                            @Model.Membro.Plano.Preco.ToString("0.00") €
+                        </span>
+                    }
+                    else
+                    {
+                        <span>Sem plano associado</span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">
+                    Estado
+                </dt>
+
+                <dd class="col-sm-9">
+                    @if (Model.Membro.Ativo)
+                    {
+                        <span class="badge bg-success">
+                            Ativo
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Inativo
+                        </span>
+                    }
+                </dd>
+
+            </dl>
+
+        </div>
+    </div>
+
+    <h3 class="mb-3">Aulas inscritas</h3>
+
+    @if (Model.Membro.Aulas.Count == 0)
+    {
+        <div class="alert alert-info">
+            Este membro ainda não está inscrito em nenhuma aula.
+        </div>
+    }
+    else
+    {
+        <table class="table table-striped table-bordered">
+
+            <thead class="table-dark">
+                <tr>
+                    <th>Aula</th>
+                    <th>Instrutor</th>
+                    <th>Data e hora</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @foreach (var aula in Model.Membro.Aulas)
+                {
+                    <tr>
+                        <td>
+                            @aula.Nome
+                        </td>
+
+                        <td>
+                            @aula.Instrutor
+                        </td>
+
+                        <td>
+                            @aula.DataHora.ToString("dd/MM/yyyy HH:mm")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+
+    <a asp-page="Edit"
+       asp-route-id="@Model.Membro.Id"
+       class="btn btn-warning">
+        Editar
+    </a>
+
+    <a asp-page="Index"
+       class="btn btn-secondary">
+        Voltar
+    </a>
 }
