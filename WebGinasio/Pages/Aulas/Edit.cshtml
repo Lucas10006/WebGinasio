@@ -1,4 +1,134 @@
 ﻿@page
 @model WebGinasio.Pages.Aulas.EditModel
+
 @{
+    ViewData["Title"] = "Editar Aula";
+}
+
+<h1 class="mb-4">Editar Aula</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <input type="hidden"
+                   asp-for="Aula.Id" />
+
+            <div class="mb-3">
+                <label asp-for="Aula.Nome"
+                       class="form-label">
+                    Nome da aula
+                </label>
+
+                <input asp-for="Aula.Nome"
+                       class="form-control" />
+
+                <span asp-validation-for="Aula.Nome"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Aula.Instrutor"
+                       class="form-label">
+                    Instrutor
+                </label>
+
+                <input asp-for="Aula.Instrutor"
+                       class="form-control" />
+
+                <span asp-validation-for="Aula.Instrutor"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Aula.DataHora"
+                       class="form-label">
+                    Data e hora
+                </label>
+
+                <input asp-for="Aula.DataHora"
+                       class="form-control"
+                       type="datetime-local"
+                       asp-format="{0:yyyy-MM-ddTHH:mm}" />
+
+                <span asp-validation-for="Aula.DataHora"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Aula.DuracaoMinutos"
+                       class="form-label">
+                    Duração em minutos
+                </label>
+
+                <input asp-for="Aula.DuracaoMinutos"
+                       class="form-control"
+                       type="number"
+                       min="15"
+                       max="240" />
+
+                <span asp-validation-for="Aula.DuracaoMinutos"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Aula.LotacaoMaxima"
+                       class="form-label">
+                    Lotação máxima
+                </label>
+
+                <input asp-for="Aula.LotacaoMaxima"
+                       class="form-control"
+                       type="number"
+                       min="1"
+                       max="100" />
+
+                <span asp-validation-for="Aula.LotacaoMaxima"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="Aula.Ativa"
+                       class="form-check-input" />
+
+                <label asp-for="Aula.Ativa"
+                       class="form-check-label">
+                    Aula ativa
+                </label>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-warning">
+                Guardar alterações
+            </button>
+
+            <a asp-page="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }
