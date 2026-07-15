@@ -1,4 +1,119 @@
 ﻿@page
 @model WebGinasio.Pages.Membros.DeleteModel
+
 @{
+    ViewData["Title"] = "Eliminar Membro";
 }
+
+<h1 class="mb-4">Eliminar Membro</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+
+<div class="alert alert-warning">
+    Tens a certeza de que queres eliminar este membro?
+</div>
+
+<div class="card">
+    <div class="card-body">
+
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                Nome
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Membro.Nome
+            </dd>
+
+            <dt class="col-sm-3">
+                Email
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Membro.Email
+            </dd>
+
+            <dt class="col-sm-3">
+                Telefone
+            </dt>
+
+            <dd class="col-sm-9">
+                @if (string.IsNullOrWhiteSpace(Model.Membro.Telefone))
+                {
+                    <span>Sem telefone</span>
+                }
+                else
+                {
+                    @Model.Membro.Telefone
+                }
+            </dd>
+
+            <dt class="col-sm-3">
+                Plano
+            </dt>
+
+            <dd class="col-sm-9">
+                @if (Model.Membro.Plano != null)
+                {
+                    @Model.Membro.Plano.Nome
+                }
+                else
+                {
+                    <span>Sem plano associado</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">
+                Data de inscrição
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Membro.DataInscricao.ToString("dd/MM/yyyy")
+            </dd>
+
+            <dt class="col-sm-3">
+                Estado
+            </dt>
+
+            <dd class="col-sm-9">
+                @if (Model.Membro.Ativo)
+                {
+                    <span class="badge bg-success">
+                        Ativo
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">
+                        Inativo
+                    </span>
+                }
+            </dd>
+
+        </dl>
+
+        <form method="post">
+
+            <input type="hidden"
+                   asp-for="Membro.Id" />
+
+            <button type="submit"
+                    class="btn btn-danger">
+                Confirmar eliminação
+            </button>
+
+            <a asp-page="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>
