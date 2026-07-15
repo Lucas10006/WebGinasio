@@ -1,36 +1,42 @@
+using Ginasio.API.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Adiciona suporte às Razor Pages
-builder.Services.AddRazorPages();
+// Configura a ligação à base de dados
+builder.Services.AddDbContext<GinasioContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
 
-// Regista um HttpClient para comunicar com a API
-builder.Services.AddHttpClient("API", client =>
+// Adiciona os Controllers da API
+// O IgnoreCycles evita erros ao devolver relações entre objetos
+builder.Services.AddControllers().AddJsonOptions(options =>
 {
-    client.BaseAddress = new Uri(
-        builder.Configuration["ApiSettings:BaseUrl"]!
-    );
+    options.JsonSerializerOptions.ReferenceHandler =
+        System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
+
+// Adiciona o Swagger para testar a API
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configuração para ambiente de produção
-if (!app.Environment.IsDevelopment())
+// Ativa o Swagger durante o desenvolvimento
+if (app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
-// Redireciona automaticamente para HTTPS
+// Redireciona os pedidos para HTTPS
 app.UseHttpsRedirection();
-
-// Permite usar ficheiros da pasta wwwroot
-app.UseStaticFiles();
-
-app.UseRouting();
 
 app.UseAuthorization();
 
-// Mapeia as Razor Pages
-app.MapRazorPages();
+// Ativa os Controllers da API
+app.MapControllers();
 
 app.Run();
