@@ -1,4 +1,103 @@
 ﻿@page
 @model WebGinasio.Pages.Planos.EditModel
+
 @{
+    ViewData["Title"] = "Editar Plano";
+}
+
+<h1 class="mb-4">Editar Plano</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+
+<div class="row">
+    <div class="col-md-6">
+
+        <form method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3">
+            </div>
+
+            <input type="hidden"
+                   asp-for="Plano.Id" />
+
+            <div class="mb-3">
+                <label asp-for="Plano.Nome"
+                       class="form-label">
+                    Nome
+                </label>
+
+                <input asp-for="Plano.Nome"
+                       class="form-control" />
+
+                <span asp-validation-for="Plano.Nome"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Plano.Descricao"
+                       class="form-label">
+                    Descrição
+                </label>
+
+                <textarea asp-for="Plano.Descricao"
+                          class="form-control"
+                          rows="4">
+                </textarea>
+
+                <span asp-validation-for="Plano.Descricao"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Plano.Preco"
+                       class="form-label">
+                    Preço mensal
+                </label>
+
+                <input asp-for="Plano.Preco"
+                       class="form-control"
+                       type="number"
+                       step="0.01"
+                       min="0.01" />
+
+                <span asp-validation-for="Plano.Preco"
+                      class="text-danger">
+                </span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="Plano.Ativo"
+                       class="form-check-input" />
+
+                <label asp-for="Plano.Ativo"
+                       class="form-check-label">
+                    Plano ativo
+                </label>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-warning">
+                Guardar alterações
+            </button>
+
+            <a asp-page="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }
