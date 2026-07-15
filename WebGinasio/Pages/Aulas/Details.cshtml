@@ -1,86 +1,177 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Net.Http.Json;
+﻿@page
+@model WebGinasio.Pages.Aulas.DetailsModel
 
-namespace WebGinasio.Pages.Aulas
+@{
+    ViewData["Title"] = "Detalhes da Aula";
+}
+
+<h1 class="mb-4">Detalhes da Aula</h1>
+
+@if (Model.MensagemErro != null)
 {
-    // Esta página apresenta os detalhes de uma aula
-    public class DetailsModel : PageModel
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+else
+{
+    <div class="card mb-4">
+
+        <div class="card-header">
+            <h4 class="mb-0">
+                @Model.Aula.Nome
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <dl class="row">
+
+                <dt class="col-sm-3">
+                    Nome
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Aula.Nome
+                </dd>
+
+                <dt class="col-sm-3">
+                    Instrutor
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Aula.Instrutor
+                </dd>
+
+                <dt class="col-sm-3">
+                    Data e hora
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Aula.DataHora.ToString("dd/MM/yyyy HH:mm")
+                </dd>
+
+                <dt class="col-sm-3">
+                    Duração
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Aula.DuracaoMinutos minutos
+                </dd>
+
+                <dt class="col-sm-3">
+                    Lotação
+                </dt>
+
+                <dd class="col-sm-9">
+                    @Model.Aula.Membros.Count / @Model.Aula.LotacaoMaxima
+
+                    @if (Model.Aula.Membros.Count >= Model.Aula.LotacaoMaxima)
+                    {
+                        <span class="badge bg-danger ms-2">
+                            Cheia
+                        </span>
+                    }
+                    else if (
+                    Model.Aula.Membros.Count >=
+                    Model.Aula.LotacaoMaxima * 0.8
+                    )
+                    {
+                        <span class="badge bg-warning text-dark ms-2">
+                            Quase cheia
+                        </span>
+                    }
+                </dd>
+
+                <dt class="col-sm-3">
+                    Estado
+                </dt>
+
+                <dd class="col-sm-9">
+                    @if (Model.Aula.Ativa)
+                    {
+                        <span class="badge bg-success">
+                            Ativa
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">
+                            Inativa
+                        </span>
+                    }
+                </dd>
+
+            </dl>
+
+        </div>
+    </div>
+
+    <h3 class="mb-3">Membros inscritos</h3>
+
+    @if (Model.Aula.Membros.Count == 0)
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-
-        // Recebe o cliente usado para comunicar com a API
-        public DetailsModel(IHttpClientFactory httpClientFactory)
-        {
-            _httpClientFactory = httpClientFactory;
-        }
-
-        // Guarda os dados da aula recebidos da API
-        public AulaDetailsModel Aula { get; set; } = new();
-
-        // Mensagem apresentada caso aconteça algum erro
-        public string? MensagemErro { get; set; }
-
-        public async Task<IActionResult>
-    OnGetAsync(int id)
+        <div class="alert alert-info">
+            Ainda não existem membros inscritos nesta aula.
+        </div>
+    }
+    else
     {
-    try
-    {
-    var client = _httpClientFactory.CreateClient("API");
+        <table class="table table-striped table-bordered align-middle">
 
-    // Procura a aula através do seu ID
-    var aula = await client.GetFromJsonAsync<AulaDetailsModel>
-        (
-        $"api/Aulas/{id}"
-        );
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Email</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
 
-        if (aula == null)
-        {
-        return NotFound();
-        }
+            <tbody>
 
-        Aula = aula;
-        }
-        catch (Exception ex)
-        {
-        MensagemErro =
-        $"Não foi possível carregar a aula: {ex.Message}";
-        }
+                @foreach (var membro in Model.Aula.Membros)
+                {
+                    <tr>
 
-        return Page();
-        }
-        }
+                        <td>
+                            @membro.Nome
+                        </td>
 
-        // Modelo usado para apresentar os detalhes da aula
-        public class AulaDetailsModel
-        {
-        public int Id { get; set; }
+                        <td>
+                            @membro.Email
+                        </td>
 
-        public string Nome { get; set; } = string.Empty;
+                        <td>
+                            @if (membro.Ativo)
+                            {
+                                <span class="badge bg-success">
+                                    Ativo
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">
+                                    Inativo
+                                </span>
+                            }
+                        </td>
 
-        public string Instrutor { get; set; } = string.Empty;
+                    </tr>
+                }
 
-        public DateTime DataHora { get; set; }
+            </tbody>
 
-        public int DuracaoMinutos { get; set; }
+        </table>
+    }
 
-        public int LotacaoMaxima { get; set; }
+    <a asp-page="Edit"
+       asp-route-id="@Model.Aula.Id"
+       class="btn btn-warning">
+        Editar
+    </a>
 
-        public bool Ativa { get; set; }
-
-        public List<MembroDetailsAulaModel>
-            Membros { get; set; } = new();
-            }
-
-            // Modelo usado para mostrar os membros inscritos
-            public class MembroDetailsAulaModel
-            {
-            public int Id { get; set; }
-
-            public string Nome { get; set; } = string.Empty;
-
-            public string Email { get; set; } = string.Empty;
-
-            public bool Ativo { get; set; }
-            }
-            }
+    <a asp-page="Index"
+       class="btn btn-secondary">
+        Voltar
+    </a>
+}
