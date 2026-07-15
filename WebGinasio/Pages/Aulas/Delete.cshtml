@@ -1,4 +1,113 @@
 ﻿@page
 @model WebGinasio.Pages.Aulas.DeleteModel
+
 @{
+    ViewData["Title"] = "Eliminar Aula";
 }
+
+<h1 class="mb-4">Eliminar Aula</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+
+<div class="alert alert-warning">
+    Tens a certeza de que queres eliminar esta aula?
+</div>
+
+<div class="card">
+    <div class="card-body">
+
+        <dl class="row">
+
+            <dt class="col-sm-3">
+                Nome
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Aula.Nome
+            </dd>
+
+            <dt class="col-sm-3">
+                Instrutor
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Aula.Instrutor
+            </dd>
+
+            <dt class="col-sm-3">
+                Data e hora
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Aula.DataHora.ToString("dd/MM/yyyy HH:mm")
+            </dd>
+
+            <dt class="col-sm-3">
+                Duração
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Aula.DuracaoMinutos minutos
+            </dd>
+
+            <dt class="col-sm-3">
+                Lotação
+            </dt>
+
+            <dd class="col-sm-9">
+                @Model.Aula.Membros.Count / @Model.Aula.LotacaoMaxima
+            </dd>
+
+            <dt class="col-sm-3">
+                Estado
+            </dt>
+
+            <dd class="col-sm-9">
+                @if (Model.Aula.Ativa)
+                {
+                    <span class="badge bg-success">
+                        Ativa
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">
+                        Inativa
+                    </span>
+                }
+            </dd>
+
+        </dl>
+
+        @if (Model.Aula.Membros.Count > 0)
+        {
+            <div class="alert alert-info">
+                Esta aula tem @Model.Aula.Membros.Count membro(s) inscrito(s).
+                As inscrições também serão removidas.
+            </div>
+        }
+
+        <form method="post">
+
+            <input type="hidden"
+                   asp-for="Aula.Id" />
+
+            <button type="submit"
+                    class="btn btn-danger">
+                Confirmar eliminação
+            </button>
+
+            <a asp-page="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>
