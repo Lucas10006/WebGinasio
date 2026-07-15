@@ -1,4 +1,129 @@
 ﻿@page
 @model WebGinasio.Pages.Membros.IndexModel
+
 @{
+    ViewData["Title"] = "Membros";
 }
+
+<h1 class="mb-4">Membros do Ginásio</h1>
+
+@if (Model.MensagemErro != null)
+{
+    <div class="alert alert-danger">
+        @Model.MensagemErro
+    </div>
+}
+
+<p>
+    <a class="btn btn-success"
+       asp-page="Create">
+        Novo Membro
+    </a>
+</p>
+
+<table class="table table-striped table-bordered align-middle">
+
+    <thead class="table-dark">
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Telefone</th>
+            <th>Plano</th>
+            <th>Data de Inscrição</th>
+            <th>Estado</th>
+            <th width="220">Ações</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @if (Model.Membros.Count == 0)
+        {
+            <tr>
+                <td colspan="7" class="text-center">
+                    Não existem membros registados.
+                </td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var membro in Model.Membros)
+            {
+                <tr>
+
+                    <td>
+                        @membro.Nome
+                    </td>
+
+                    <td>
+                        @membro.Email
+                    </td>
+
+                    <td>
+                        @if (string.IsNullOrWhiteSpace(membro.Telefone))
+                        {
+                            <span>Sem telefone</span>
+                        }
+                        else
+                        {
+                            @membro.Telefone
+                        }
+                    </td>
+
+                    <td>
+                        @if (membro.Plano != null)
+                        {
+                            @membro.Plano.Nome
+                        }
+                        else
+                        {
+                            <span>Sem plano</span>
+                        }
+                    </td>
+
+                    <td>
+                        @membro.DataInscricao.ToString("dd/MM/yyyy")
+                    </td>
+
+                    <td>
+                        @if (membro.Ativo)
+                        {
+                            <span class="badge bg-success">
+                                Ativo
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">
+                                Inativo
+                            </span>
+                        }
+                    </td>
+
+                    <td>
+                        <a class="btn btn-primary btn-sm"
+                           asp-page="Details"
+                           asp-route-id="@membro.Id">
+                            Detalhes
+                        </a>
+
+                        <a class="btn btn-warning btn-sm"
+                           asp-page="Edit"
+                           asp-route-id="@membro.Id">
+                            Editar
+                        </a>
+
+                        <a class="btn btn-danger btn-sm"
+                           asp-page="Delete"
+                           asp-route-id="@membro.Id">
+                            Eliminar
+                        </a>
+                    </td>
+
+                </tr>
+            }
+        }
+
+    </tbody>
+
+</table>
