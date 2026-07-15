@@ -46,5 +46,8 @@ namespace Ginasio.API.Models
         // Lista das aulas em que o membro está inscrito
         public ICollection<Aula> Aulas { get; set; }
             = new List<Aula>();
+
+        // Conta de utilizador associada ao membro
+        public Utilizador? Utilizador { get; set; }
     }
 }
