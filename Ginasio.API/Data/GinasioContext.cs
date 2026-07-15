@@ -15,6 +15,7 @@ namespace Ginasio.API.Data
         public DbSet<Membro> Membros { get; set; }
         public DbSet<Plano> Planos { get; set; }
         public DbSet<Aula> Aulas { get; set; }
+        public DbSet<Utilizador> Utilizadores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,9 +35,22 @@ namespace Ginasio.API.Data
                 .HasMany(m => m.Aulas)
                 .WithMany(a => a.Membros);
 
+            // Um membro pode ter uma conta de utilizador
+            // Cada conta de membro só pode estar ligada a um membro
+            modelBuilder.Entity<Utilizador>()
+                .HasOne(u => u.Membro)
+                .WithOne(m => m.Utilizador)
+                .HasForeignKey<Utilizador>(u => u.MembroId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             // O email de cada membro deve ser único
             modelBuilder.Entity<Membro>()
                 .HasIndex(m => m.Email)
+                .IsUnique();
+
+            // O email de cada utilizador também deve ser único
+            modelBuilder.Entity<Utilizador>()
+                .HasIndex(u => u.Email)
                 .IsUnique();
         }
     }
