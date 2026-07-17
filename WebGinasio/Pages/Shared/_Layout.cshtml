@@ -18,49 +18,83 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+
+                    <!-- Menu principal da aplicação -->
                     <ul class="navbar-nav flex-grow-1">
 
+                        <!-- Início -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-page="/Index">
+                            <a class="nav-link text-dark" asp-page="/Index">
                                 Início
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-page="/Membros/Index">
-                                Membros
-                            </a>
-                        </li>
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <!-- Membros -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Membros/Index">
+                                    Membros
+                                </a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-page="/Planos/Index">
-                                Planos
-                            </a>
-                        </li>
+                            <!-- Planos -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Planos/Index">
+                                    Planos
+                                </a>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-page="/Aulas/Index">
-                                Aulas
-                            </a>
-                        </li>
+                            <!-- Aulas -->
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-page="/Aulas/Index">
+                                    Aulas
+                                </a>
+                            </li>
+                        }
 
+                        <!-- Privacidade -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark"
-                               asp-area=""
-                               asp-page="/Privacy">
+                            <a class="nav-link text-dark" asp-page="/Privacy">
                                 Privacidade
                             </a>
                         </li>
 
                     </ul>
+
+                    <!-- Menu apresentado consoante o estado da autenticação -->
+                    <ul class="navbar-nav">
+
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <!-- Nome do utilizador autenticado -->
+                            <li class="nav-item">
+                                <span class="nav-link text-dark">
+                                    Olá, @User.Identity.Name
+                                </span>
+                            </li>
+
+                            <!-- Terminar sessão -->
+                            <li class="nav-item">
+                                <a class="nav-link text-danger"
+                                   asp-page="/Logout/Logout">
+                                    Sair
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <!-- Página de Login -->
+                            <li class="nav-item">
+                                <a class="nav-link text-primary"
+                                   asp-page="/Login/Login">
+                                    Entrar
+                                </a>
+                            </li>
+                        }
+
+                    </ul>
+
                 </div>
             </div>
         </nav>

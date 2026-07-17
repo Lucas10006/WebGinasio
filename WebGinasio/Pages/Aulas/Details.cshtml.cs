@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebGinasio.Pages.Aulas
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página apresenta os detalhes de uma aula
     public class DetailsModel : PageModel
     {

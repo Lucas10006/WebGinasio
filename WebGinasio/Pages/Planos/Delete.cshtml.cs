@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebGinasio.Pages.Planos
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página permite confirmar a eliminação de um plano
     public class DeleteModel : PageModel
     {

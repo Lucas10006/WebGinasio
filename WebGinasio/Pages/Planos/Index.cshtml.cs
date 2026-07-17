@@ -1,8 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
 
+
 namespace WebGinasio.Pages.Planos
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página apresenta a lista dos planos
     public class IndexModel : PageModel
     {

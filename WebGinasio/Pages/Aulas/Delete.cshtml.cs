@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
 
 namespace WebGinasio.Pages.Aulas
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página permite confirmar a eliminação de uma aula
     public class DeleteModel : PageModel
     {

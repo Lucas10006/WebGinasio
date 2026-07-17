@@ -3,9 +3,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebGinasio.Pages.Membros
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página permite editar os dados de um membro
     public class EditModel : PageModel
     {

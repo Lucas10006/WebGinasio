@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebGinasio.Pages.Planos
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página permite editar um plano
     public class EditModel : PageModel
     {

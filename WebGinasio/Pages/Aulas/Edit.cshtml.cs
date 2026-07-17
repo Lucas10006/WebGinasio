@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
@@ -5,6 +6,7 @@ using System.Net.Http.Json;
 
 namespace WebGinasio.Pages.Aulas
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página permite editar os dados de uma aula
     public class EditModel : PageModel
     {

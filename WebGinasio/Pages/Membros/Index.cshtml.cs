@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace WebGinasio.Pages.Membros
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página apresenta a lista dos membros
     public class IndexModel : PageModel
     {

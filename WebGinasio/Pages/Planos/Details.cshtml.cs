@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
 
+
 namespace WebGinasio.Pages.Planos
 {
+    [Authorize(Roles = "Administrador")]
     // Esta página apresenta os detalhes de um plano
     public class DetailsModel : PageModel
     {

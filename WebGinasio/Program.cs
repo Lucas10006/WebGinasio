@@ -1,9 +1,23 @@
 using System.Net;
+using Microsoft.AspNetCore.Authentication.Cookies;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Adiciona suporte às Razor Pages
 builder.Services.AddRazorPages();
+
+// Configura a autenticação através de cookies
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        // Página para onde o utilizador é enviado caso não tenha sessão iniciada
+        options.LoginPath = "/Login";
+        // Página apresentada quando o utilizador não tem permissões suficientes
+        options.AccessDeniedPath = "/AccessDenied";
+        // Tempo máximo de validade da sessão
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    });
 
 // Regista o HttpClient usado para comunicar com a API
 builder.Services.AddHttpClient("API", client =>
@@ -35,6 +49,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Ativa as Razor Pages

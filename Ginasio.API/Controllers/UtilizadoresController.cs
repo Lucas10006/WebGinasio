@@ -290,6 +290,43 @@ namespace Ginasio.API.Controllers
             return NoContent();
         }
 
+        // POST: api/Utilizadores/Login
+        [HttpPost("Login")]
+        public async Task<ActionResult<LoginResposta>> Login(LoginPedido pedido)
+        {
+            var utilizador = await _context.Utilizadores
+                .FirstOrDefaultAsync(u => u.Email == pedido.Email.ToLower());
+
+            if (utilizador == null)
+            {
+                return Unauthorized("Email ou palavra-passe incorretos.");
+            }
+
+            if (!utilizador.Ativo)
+            {
+                return Unauthorized("Esta conta está desativada.");
+            }
+
+            var resultado = _passwordHasher.VerifyHashedPassword(
+                utilizador,
+                utilizador.PasswordHash,
+                pedido.Password
+            );
+
+            if (resultado == PasswordVerificationResult.Failed)
+            {
+                return Unauthorized("Email ou palavra-passe incorretos.");
+            }
+
+            return Ok(new LoginResposta
+            {
+                Id = utilizador.Id,
+                Nome = utilizador.Nome,
+                Email = utilizador.Email,
+                TipoUtilizador = utilizador.TipoUtilizador
+            });
+        }
+
         // DELETE: api/Utilizadores/5
         // Elimina uma conta de utilizador
         [HttpDelete("{id}")]
@@ -381,5 +418,26 @@ namespace Ginasio.API.Controllers
         public int? MembroId { get; set; }
 
         public string? NomeMembro { get; set; }
+    }
+
+    public class LoginPedido
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        public string Password { get; set; } = string.Empty;
+    }
+
+    public class LoginResposta
+    {
+        public int Id { get; set; }
+
+        public string Nome { get; set; } = string.Empty;
+
+        public string Email { get; set; } = string.Empty;
+
+        public string TipoUtilizador { get; set; } = string.Empty;
     }
 }

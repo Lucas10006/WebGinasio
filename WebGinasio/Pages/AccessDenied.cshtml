@@ -1,0 +1,18 @@
+﻿@page
+@model WebGinasio.Pages.AccessDeniedModel
+
+@{
+    ViewData["Title"] = "Acesso Negado";
+}
+
+<div class="text-center mt-5">
+    <h1 class="text-danger">Acesso Negado</h1>
+
+    <p class="lead">
+        Não tem permissões para aceder a esta página.
+    </p>
+
+    <a asp-page="/Index" class="btn btn-primary">
+        Voltar ao Início
+    </a>
+</div>
