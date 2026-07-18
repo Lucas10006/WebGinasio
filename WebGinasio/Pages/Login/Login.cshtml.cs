@@ -3,20 +3,17 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
 using System.Net.Http.Json;
+using System.Security.Claims;
 
-namespace WebGinasio.Pages
+namespace WebGinasio.Pages.Login
 {
-    // Modelo da página de Login
+    // Modelo da página de login
     public class LoginModel : PageModel
     {
-        // Permite comunicar com a API
         private readonly IHttpClientFactory _httpClientFactory;
 
-        // Recebe a fábrica de HttpClient através da injeção de dependências
+        // Recebe o HttpClient configurado no Program.cs
         public LoginModel(IHttpClientFactory httpClientFactory)
         {
             _httpClientFactory = httpClientFactory;
@@ -31,16 +28,18 @@ namespace WebGinasio.Pages
         // Palavra-passe introduzida pelo utilizador
         [BindProperty]
         [Required(ErrorMessage = "A palavra-passe é obrigatória.")]
+        [DataType(DataType.Password)]
         public string Password { get; set; } = string.Empty;
 
-        // Mensagem apresentada caso ocorra algum erro
-        public string MensagemErro { get; set; } = string.Empty;
+        // Mensagem apresentada quando o login falha
+        public string? MensagemErro { get; set; }
 
         // Executado quando a página é aberta
         public IActionResult OnGet()
         {
-            // Se já estiver autenticado, volta para a página inicial
-            if (User.Identity != null && User.Identity.IsAuthenticated)
+            // Se o utilizador já tiver sessão iniciada,
+            // volta para a página inicial
+            if (User.Identity?.IsAuthenticated == true)
             {
                 return RedirectToPage("/Index");
             }
@@ -48,49 +47,52 @@ namespace WebGinasio.Pages
             return Page();
         }
 
-        // Executado quando o utilizador carrega no botão "Entrar"
+        // Executado quando o utilizador carrega em Entrar
         public async Task<IActionResult> OnPostAsync()
         {
-            // Verifica se os dados introduzidos são válidos
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            // Obtém o HttpClient configurado no Program.cs
             var client = _httpClientFactory.CreateClient("API");
 
-            // Cria o pedido que será enviado para a API
+            // Dados enviados para a API
             var pedido = new LoginPedido
             {
                 Email = Email,
                 Password = Password
             };
 
-            // Converte o pedido para JSON
-            var json = JsonSerializer.Serialize(pedido);
+            HttpResponseMessage response;
 
-            var content = new StringContent(
-                json,
-                Encoding.UTF8,
-                "application/json"
-            );
+            try
+            {
+                // Envia o pedido para o endpoint criado no AuthController
+                response = await client.PostAsJsonAsync(
+                    "api/Auth/login",
+                    pedido
+                );
+            }
+            catch (HttpRequestException)
+            {
+                MensagemErro = "Não foi possível comunicar com a API.";
+                return Page();
+            }
 
-            // Envia o pedido de login para a API
-            var response = await client.PostAsync(
-                "api/Utilizadores/Login",
-                content
-            );
-
-            // Verifica se o login foi bem sucedido
             if (!response.IsSuccessStatusCode)
             {
-                MensagemErro = "Email ou palavra-passe incorretos.";
+                MensagemErro = response.StatusCode ==
+                               System.Net.HttpStatusCode.Unauthorized
+                    ? "Email ou palavra-passe incorretos."
+                    : "Não foi possível iniciar sessão.";
+
                 return Page();
             }
 
             // Lê os dados devolvidos pela API
-            var resposta = await response.Content.ReadFromJsonAsync<LoginResposta>();
+            var resposta = await response.Content
+                .ReadFromJsonAsync<LoginResposta>();
 
             if (resposta == null)
             {
@@ -98,57 +100,81 @@ namespace WebGinasio.Pages
                 return Page();
             }
 
-            // Cria os dados de autenticação do utilizador
+            // Informações guardadas no cookie
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, resposta.Id.ToString()),
-                new Claim(ClaimTypes.Name, resposta.Nome),
-                new Claim(ClaimTypes.Email, resposta.Email),
-                new Claim(ClaimTypes.Role, resposta.TipoUtilizador)
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    resposta.Id.ToString()
+                ),
+
+                new Claim(
+                    ClaimTypes.Name,
+                    resposta.Nome
+                ),
+
+                new Claim(
+                    ClaimTypes.Email,
+                    resposta.Email
+                ),
+
+                new Claim(
+                    ClaimTypes.Role,
+                    resposta.TipoUtilizador
+                )
             };
 
-            // Cria a identidade do utilizador
+            // Se for uma conta de membro, guarda também o ID do membro
+            if (resposta.MembroId.HasValue)
+            {
+                claims.Add(
+                    new Claim(
+                        "MembroId",
+                        resposta.MembroId.Value.ToString()
+                    )
+                );
+            }
+
             var identity = new ClaimsIdentity(
                 claims,
                 CookieAuthenticationDefaults.AuthenticationScheme
             );
 
-            // Cria o principal utilizado pela autenticação
             var principal = new ClaimsPrincipal(identity);
 
-            // Guarda o cookie de autenticação
+            // Cria o cookie de autenticação
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
-                principal
+                principal,
+                new AuthenticationProperties
+                {
+                    IsPersistent = false
+                }
             );
 
-            // Redireciona o utilizador para a página inicial
             return RedirectToPage("/Index");
         }
     }
-    // Representa os dados enviados para a API durante o login
+
+    // Dados enviados para a API
     public class LoginPedido
     {
-        // Email introduzido pelo utilizador
         public string Email { get; set; } = string.Empty;
 
-        // Palavra-passe introduzida pelo utilizador
         public string Password { get; set; } = string.Empty;
     }
 
-    // Representa os dados devolvidos pela API após um login com sucesso
+    // Dados recebidos da API
     public class LoginResposta
     {
-        // Identificador do utilizador
         public int Id { get; set; }
 
-        // Nome do utilizador
         public string Nome { get; set; } = string.Empty;
 
-        // Email do utilizador
         public string Email { get; set; } = string.Empty;
 
-        // Tipo de utilizador (Administrador ou Membro)
         public string TipoUtilizador { get; set; } = string.Empty;
+
+        public int? MembroId { get; set; }
     }
 }
