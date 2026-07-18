@@ -1,22 +1,45 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="pt">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@ViewData["Title"] - WebGinasio</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/WebGinasio.styles.css" asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <link rel="stylesheet"
+          href="~/css/site.css"
+          asp-append-version="true" />
+
+    <link rel="stylesheet"
+          href="~/WebGinasio.styles.css"
+          asp-append-version="true" />
 </head>
+
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-page="/Index">WebGinasio</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+                <a class="navbar-brand"
+                   asp-area=""
+                   asp-page="/Index">
+                    WebGinasio
+                </a>
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent"
+                        aria-expanded="false"
+                        aria-label="Abrir menu">
+
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
                     <!-- Menu principal da aplicação -->
@@ -24,30 +47,34 @@
 
                         <!-- Início -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Index">
+                            <a class="nav-link text-dark"
+                               asp-page="/Index">
                                 Início
                             </a>
                         </li>
 
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        @if (User.Identity?.IsAuthenticated == true)
                         {
                             <!-- Membros -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Membros/Index">
+                                <a class="nav-link text-dark"
+                                   asp-page="/Membros/Index">
                                     Membros
                                 </a>
                             </li>
 
                             <!-- Planos -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Planos/Index">
+                                <a class="nav-link text-dark"
+                                   asp-page="/Planos/Index">
                                     Planos
                                 </a>
                             </li>
 
                             <!-- Aulas -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-page="/Aulas/Index">
+                                <a class="nav-link text-dark"
+                                   asp-page="/Aulas/Index">
                                     Aulas
                                 </a>
                             </li>
@@ -55,7 +82,8 @@
 
                         <!-- Privacidade -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-page="/Privacy">
+                            <a class="nav-link text-dark"
+                               asp-page="/Privacy">
                                 Privacidade
                             </a>
                         </li>
@@ -65,7 +93,7 @@
                     <!-- Menu apresentado consoante o estado da autenticação -->
                     <ul class="navbar-nav">
 
-                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        @if (User.Identity?.IsAuthenticated == true)
                         {
                             <!-- Nome do utilizador autenticado -->
                             <li class="nav-item">
@@ -77,14 +105,14 @@
                             <!-- Terminar sessão -->
                             <li class="nav-item">
                                 <a class="nav-link text-danger"
-                                   asp-page="/Logout/Logout">
+                                   asp-page="/Logout">
                                     Sair
                                 </a>
                             </li>
                         }
                         else
                         {
-                            <!-- Página de Login -->
+                            <!-- Página de login -->
                             <li class="nav-item">
                                 <a class="nav-link text-primary"
                                    asp-page="/Login/Login">
@@ -99,6 +127,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -107,13 +136,21 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - WebGinasio - <a asp-area="" asp-page="/Privacy">Privacy</a>
+            &copy; 2026 - WebGinasio -
+            <a asp-area=""
+               asp-page="/Privacy">
+                Privacidade
+            </a>
         </div>
     </footer>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <script src="~/js/site.js"
+            asp-append-version="true">
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>
